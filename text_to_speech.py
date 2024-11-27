@@ -10,7 +10,7 @@ import io
 
 client = OpenAI()
 
-
+#function to fetch data from weather api
 def get_current_weather(latitude, longitude):
     """Get the current weather in a given latitude and longitude"""
     base = "https://api.openweathermap.org/data/2.5/weather"
