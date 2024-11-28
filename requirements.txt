@@ -3,3 +3,4 @@ openai
 gtts
 pygame
 requests
+python-dotenv

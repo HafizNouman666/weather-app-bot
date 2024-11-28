@@ -4,11 +4,16 @@ import json
 import requests
 from openai import OpenAI
 from gtts import gTTS
+from dotenv import load_dotenv
 import tempfile  
 import pygame  
 import io
 
-client = OpenAI()
+load_dotenv()
+
+api_key = os.getenv("OPENAI_API_KEY")
+
+client = OpenAI(api_key=api_key)
 
 #function to fetch data from weather api
 def get_current_weather(latitude, longitude):
