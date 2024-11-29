@@ -102,7 +102,7 @@ def run_conversation(content):
     if tool_calls:
         messages.append(response_message)
         available_functions = {"get_current_weather": get_current_weather}
-        print("********************************TOOL IS CALL****************************************************")
+        #print("********************************TOOL IS CALL****************************************************")
         for tool_call in tool_calls:
             function_name = tool_call.function.name
             function_args = json.loads(tool_call.function.arguments)
@@ -127,7 +127,7 @@ def run_conversation(content):
         )
         return second_response
     else:
-        print("-----------------------------------------TOOL NOT CALL----------------------------------------------------------")
+        #print("-----------------------------------------TOOL NOT CALL----------------------------------------------------------")
         messages.append({
             "role": "assistant",
             "content": """ 
