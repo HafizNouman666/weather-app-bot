@@ -31,9 +31,7 @@ def get_current_weather(latitude, longitude):
         }
         return json.dumps(result, indent=4)
     else:
-        return f"Failed to fetch weather data. Status Code: {response.status_code}"
-
-
+        return f"Failed to fetch weather data. Status Code: {response.status_code}" 
 
 def run_conversation(content):
     messages = [{"role": "user", "content": content}]
@@ -42,7 +40,8 @@ def run_conversation(content):
             "type": "function",
             "function": {
                 "name": "get_current_weather",
-                "description": """Get the current weather in a given latitude and longitude. If no latitude and longitude are provided, give a polite and friendly response. also provide forcast information according to this longitude and latitude""",
+                "description": """Get the current weather in a given latitude and longitude and aslo give response.
+                """,
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -56,19 +55,21 @@ def run_conversation(content):
     ]
 
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo-0125",
+        model="gpt-4o-mini",
         messages=messages,
         tools=tools,
         temperature=0.8,
         tool_choice="auto",
     )
     response_message = response.choices[0].message
+
     tool_calls = response_message.tool_calls
+    
 
     if tool_calls:
         messages.append(response_message)
         available_functions = {"get_current_weather": get_current_weather}
-
+        print("********************************TOOL IS CALL****************************************************")
         for tool_call in tool_calls:
             function_name = tool_call.function.name
             function_args = json.loads(tool_call.function.arguments)
@@ -86,42 +87,19 @@ def run_conversation(content):
                 })
 
         second_response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=messages,
-            temperature=0.5,
+            temperature=0.7,
             stream=True
         )
         return second_response
     else:
-        
+        print("-----------------------------------------TOOL NOT CALL----------------------------------------------------------")
         messages.append({
             "role": "assistant",
             "content": """ 
-            You are a professional weather agent providing real-time weather information and accurate forecasting. Your role is strictly limited to assisting with weather-related queries. Follow these rules:
-
-            1. Respond Only to Weather-Related Queries: Provide real-time weather updates, forecasts, and weather-related insights such as temperature, precipitation, wind, and humidity.
-            2. Reject Non-Weather Queries Politely: If asked anything outside your scope, respond with: "I am a weather agent. I only assist with weather-related queries."
-            3. Polite, Professional, and Concise: Always maintain a polite and professional tone while keeping responses clear and concise.
-            4. Realistic and Time-Bound Responses: Ensure responses simulate real-time information to match user expectations, and indicate if data cannot be provided due to hypothetical conditions.
-            5. if a user greet you then you can reply politely freindly and concise way. 
-            6. if user ask any joke or tell me any thing your politely respond to say you are a weather assistant and assist you only for weather
-             7. if someone ask about weather but dont mention the location then you ask their location. 
-
-            Example Interactions:
-            User: "What’s the weather like in New York?"
-            Assistant: "Currently in New York, it’s sunny with a temperature of 25°C and light winds."
-
-            User: "What haircut should I get today?"
-            Assistant: "I can only assist with weather-related information. Please let me know if you have any questions about the weather."
-
-            User: "Do you have any ideas for my birthday party?"
-            Assistant: "I’m here to assist with weather conditions only. Let me know if you’d like to know about the weather at your location."
-
-            User: "Is it going to rain in London tomorrow?"
-            Assistant: "It looks like there’s a chance of rain in London tomorrow. Be prepared with an umbrella."
-
-            User: "What’s the best time to visit Tokyo?"
-            Assistant: "I’m here to provide current weather information only. Please let me know if you want to know the current weather in Tokyo."
+            You are a professional weather agent providing real-time weather information and accurate forecasting but you are also polite agent and do friendly conversation with user.
+            1. if user ask about the realtime weather ask the specific location. 
             """
         })
 
@@ -211,5 +189,5 @@ st.text_input(
 )
 
 if "bot_response" in st.session_state and st.session_state.bot_response:
-    text_to_speech(st.session_state.bot_response)
+    #text_to_speech(st.session_state.bot_response)
     st.session_state.bot_response = ""  
